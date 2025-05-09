@@ -65,19 +65,19 @@
 			minZoom: 15,
 			maxZoom: 19
 		};
-		const overlay1883 = L.tileLayer('tiles/1883/{z}/{x}/{y}.png', {
+		const overlay1883 = L.tileLayer('tiles/1883/{z}/{x}/{y}.webp', {
 			attribution: '1883 Sanborn Map',
 			...overlayCommon
 		});
-		const overlay1887 = L.tileLayer('tiles/1887/{z}/{x}/{y}.png', {
+		const overlay1887 = L.tileLayer('tiles/1887/{z}/{x}/{y}.webp', {
 			attribution: '1887 Sanborn Map',
 			...overlayCommon
 		}).addTo(map); // Default to 1887 map
-		const overlay1889 = L.tileLayer('tiles/1889/{z}/{x}/{y}.png', {
+		const overlay1889 = L.tileLayer('tiles/1889/{z}/{x}/{y}.webp', {
 			attribution: '1889 Sanborn Map',
 			...overlayCommon
 		});
-		const overlay1905 = L.tileLayer('tiles/1905/{z}/{x}/{y}.png', {
+		const overlay1905 = L.tileLayer('tiles/1905/{z}/{x}/{y}.webp', {
 			attribution: '1905 Sanborn Map',
 			...overlayCommon
 		});
@@ -140,6 +140,116 @@
 				dataOverlay.addTo(map);
 			})
 			.catch((error) => console.error('Error loading data:', error));
+
+		// Add filter controls
+		const filterContainer = L.DomUtil.create('div', 'filter-container');
+		filterContainer.innerHTML = `
+  <div class="filter filter--years">
+    <label for="min-year-slider">Filter by Year:</label>
+    <div class="year-slider">
+      <span>Min Year:</span>
+      <input type="range" id="min-year-slider" min="1880" max="1925" step="1" value="1880">
+      <span id="min-year-value" class="year-slider__value">1880</span>
+    </div>
+    <div class="year-slider">
+      <span>Max Year:</span>
+      <input type="range" id="max-year-slider" min="1880" max="1925" step="1" value="1925">
+      <span id="max-year-value" class="year-slider__value">1925</span>
+    </div>
+  </div>
+  <div class="filter filter--locations">
+    <label for="location-filter">Filter by Location:</label>
+    <select id="location-filter">
+      <option value="all">All</option>
+      <option value="East Bottoms">East Bottoms</option>
+      <option value="Poverty Flat">Poverty Flat</option>
+      <option value="Smokey Pilgrims">Smokey Pilgrims</option>
+      <option value="Bad Lands">Bad Lands</option>
+    </select>
+  </div>
+`;
+
+		const minYearSlider = filterContainer.querySelector('#min-year-slider');
+		const maxYearSlider = filterContainer.querySelector('#max-year-slider');
+		const minYearValue = filterContainer.querySelector('#min-year-value');
+		const maxYearValue = filterContainer.querySelector('#max-year-value');
+		const locationSelector = filterContainer.querySelector('#location-filter');
+
+		const updateMarkers = () => {
+			const minYear = parseInt(minYearSlider.value, 10);
+			const maxYear = parseInt(maxYearSlider.value, 10);
+			const selectedLocation = locationSelector.value;
+
+			minYearValue.textContent = minYear;
+			maxYearValue.textContent = maxYear;
+
+			dataOverlay.clearLayers(); // Clear all markers
+
+			markers.forEach((marker) => {
+				if (
+					marker.year >= minYear &&
+					marker.year <= maxYear &&
+					(selectedLocation == marker.location || selectedLocation == 'all')
+				) {
+					dataOverlay.addLayer(marker); // Add marker if it matches the filters
+				}
+			});
+		};
+
+		minYearSlider.addEventListener('input', updateMarkers);
+		maxYearSlider.addEventListener('input', updateMarkers);
+		locationSelector.addEventListener('change', updateMarkers);
+
+		// Add the filters to the layer control
+		const layerControlContainer = layerControl.getContainer();
+		L.DomEvent.disableClickPropagation(filterContainer);
+		layerControlContainer.appendChild(filterContainer);
+
+		const legend = `
+<div class="legend">
+      <div class="legend__item">
+        <div class="legend__icon">
+          <img srcset="/img/marker-icon-green.png, /img/marker-icon-2x-green.png 2x" src="/img/marker-icon-green.png" alt="Green Map Marker" />
+        </div>
+        <div class="legend__label">East Bottoms</div>
+      </div>
+      <div class="legend__item">
+        <div class="legend__icon">
+          <img srcset="/img/marker-icon-yellow.png, /img/marker-icon-2x-yellow.png 2x" src="/img/marker-icon-yellow.png" alt="Yellow Map Marker" />
+        </div>
+        <div class="legend__label">Poverty Flat</div>
+      </div>
+      <div class="legend__item">
+        <div class="legend__icon">
+          <img srcset="/img/marker-icon-orange.png, /img/marker-icon-2x-orange.png 2x" src="/img/marker-icon-orange.png" alt="Orange Map Marker" />
+        </div>
+        <div class="legend__label">Smokey Pilgrims</div>
+      </div>
+      <div class="legend__item">
+        <div class="legend__icon">
+          <img srcset="/img/marker-icon-red.png, /img/marker-icon-2x-red.png 2x" src="/img/marker-icon-red.png" alt="Red Map Marker" />
+        </div>
+        <div class="legend__label">Bad Lands</div>
+        </div>
+      <div class="legend__item">
+        <div class="legend__icon">
+          <img srcset="/img/marker-icon-blue.png, /img/marker-icon-2x-blue.png 2x" src="/img/marker-icon-blue.png" alt="Blue Map Marker" />
+        </div>
+        <div class="legend__label">Other</div>
+      </div
+    </div>
+  </div>
+  `;
+		const legendContainer = L.control({ position: 'bottomright' });
+		legendContainer.onAdd = function () {
+			const div = L.DomUtil.create(
+				'div',
+				'leaflet-control-layers leaflet-control-layers-expanded leaflet-control'
+			);
+			div.innerHTML = legend;
+			return div;
+		};
+		legendContainer.addTo(map);
 	});
 
 	onDestroy(async () => {

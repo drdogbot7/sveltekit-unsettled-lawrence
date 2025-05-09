@@ -3,7 +3,7 @@
 	let { data } = $props();
 </script>
 
-<div id="about" class="prose md:prose-lg lg:prose-xl mx-auto py-12">
+<main id="about" class="prose md:prose-lg lg:prose-xl z-0 mx-auto py-12">
 	<h2>Methodology</h2>
 	<p>
 		Each of the 54 data points indicates a location in Lawrence considered crime-ridden and
@@ -41,4 +41,4 @@
 			location was. It is not meant to be exact (please see analysis).
 		</li>
 	</ol>
-</div>
+</main>

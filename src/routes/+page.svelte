@@ -2,6 +2,6 @@
 	import LeafletMap from '$lib/LeafletMap.svelte';
 </script>
 
-<main>
+<main class="z-0">
 	<LeafletMap />
 </main>

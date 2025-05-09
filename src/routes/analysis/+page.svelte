@@ -3,7 +3,7 @@
 	let { data } = $props();
 </script>
 
-<div id="analysis" class="prose md:prose-lg lg:prose-xl mx-auto py-12">
+<main id="analysis" class="prose md:prose-lg lg:prose-xl z-0 mx-auto py-12">
 	<h2>Analysis</h2>
 	<h3>What can this map tell us about Settled and Unsettled spaces?</h3>
 	<h4>Undefined Boundaries</h4>
@@ -169,4 +169,4 @@
 			</li>
 		</ol>
 	</footer>
-</div>
+</main>
