@@ -49,12 +49,15 @@
 		});
 
 		// Define basemap
-		const positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-			attribution:
-				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-			subdomains: 'abcd',
-			maxZoom: 19
-		});
+		const positron = L.tileLayer(
+			'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_4cdm_1_16e2bd006f1bcc4bc23d45b7',
+			{
+				attribution:
+					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+				subdomains: 'abcd',
+				maxZoom: 19
+			}
+		);
 		positron.addTo(map);
 
 		// Create Sanborn Map overlay layers
